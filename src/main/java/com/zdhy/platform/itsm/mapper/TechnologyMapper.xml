@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.TechnologyMapper" >
+	<resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.Technology">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="coding" property="coding" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="deadline_start" property="deadlineStart" jdbcType="TIMESTAMP" />
+		<result column="deadline_end" property="deadlineEnd" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="measure" property="measure" jdbcType="VARCHAR" />
+		<result column="service_user" property="serviceUser" jdbcType="VARCHAR" />
+		<result column="service_object" property="serviceObject" jdbcType="VARCHAR" />
+		<result column="principal_team" property="principalTeam" jdbcType="VARCHAR" />
+		<result column="service_principal" property="servicePrincipal" jdbcType="LONGVARCHAR" />
+		<result column="job_summary_accessory" property="jobSummaryAccessory" jdbcType="VARCHAR" />
+		<result column="job_summary_describe" property="jobSummaryDescribe" jdbcType="VARCHAR" />
+		<result column="job_project" property="jobProject" jdbcType="LONGVARCHAR" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="category_id" property="categoryId" jdbcType="VARCHAR" />
+
+		<collection property="jobProjects" ofType="com.zdhy.platform.itsm.entity.JobProject" column="technology_id">
+			<id column="id" property="id" />
+			<result column="name" property="name" />
+			<result column="illustrate" property="illustrate" />
+			<result column="job_style" property="jobStyle" />
+			<result column="main_duty" property="mainDuty" />
+			<result column="assist_duty" property="assistDuty" />
+			<result column="description" property="description" />
+		</collection>
+	</resultMap>
+  <sql id="Base_Column_List" >
+    id, coding, name, deadline_start, deadline_end, remark, measure, service_user, service_object, 
+    principal_team, job_summary_accessory, job_summary_describe, uuid, category_id,service_principal, job_project
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_technology_service
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKeyCascade" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM it_technology_service  
+    LEFT JOIN it_job_project jp ON ts.id= jp.technology_id
+    WHERE id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_technology_service
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_technology_service
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.Technology" >
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+		SELECT replace(uuid(),'-','') FROM dual
+	</selectKey>
+    insert into it_technology_service (id, coding, name, 
+      deadline_start, deadline_end, remark, 
+      measure, service_user, service_object, 
+      principal_team, job_summary_accessory, job_summary_describe, 
+      uuid, category_id, service_principal, 
+      job_project)
+    values (#{id,jdbcType=VARCHAR}, #{coding,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{deadlineStart,jdbcType=TIMESTAMP}, #{deadlineEnd,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{measure,jdbcType=VARCHAR}, #{serviceUser,jdbcType=VARCHAR}, #{serviceObject,jdbcType=VARCHAR}, 
+      #{principalTeam,jdbcType=VARCHAR}, #{jobSummaryAccessory,jdbcType=VARCHAR}, #{jobSummaryDescribe,jdbcType=VARCHAR}, 
+      #{uuid,jdbcType=VARCHAR}, #{categoryId,jdbcType=VARCHAR}, #{servicePrincipal,jdbcType=LONGVARCHAR}, 
+      #{jobProject,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.Technology" >
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+		SELECT replace(uuid(),'-','') FROM dual
+	</selectKey>
+    insert into it_technology_service
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="coding != null" >
+        coding,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="deadlineStart != null" >
+        deadline_start,
+      </if>
+      <if test="deadlineEnd != null" >
+        deadline_end,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="measure != null" >
+        measure,
+      </if>
+      <if test="serviceUser != null" >
+        service_user,
+      </if>
+      <if test="serviceObject != null" >
+        service_object,
+      </if>
+      <if test="principalTeam != null" >
+        principal_team,
+      </if>
+      <if test="jobSummaryAccessory != null" >
+        job_summary_accessory,
+      </if>
+      <if test="jobSummaryDescribe != null" >
+        job_summary_describe,
+      </if>
+      <if test="uuid != null" >
+        uuid,
+      </if>
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="servicePrincipal != null" >
+        service_principal,
+      </if>
+      <if test="jobProject != null" >
+        job_project,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="coding != null" >
+        #{coding,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="deadlineStart != null" >
+        #{deadlineStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deadlineEnd != null" >
+        #{deadlineEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="measure != null" >
+        #{measure,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceUser != null" >
+        #{serviceUser,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceObject != null" >
+        #{serviceObject,jdbcType=VARCHAR},
+      </if>
+      <if test="principalTeam != null" >
+        #{principalTeam,jdbcType=VARCHAR},
+      </if>
+      <if test="jobSummaryAccessory != null" >
+        #{jobSummaryAccessory,jdbcType=VARCHAR},
+      </if>
+      <if test="jobSummaryDescribe != null" >
+        #{jobSummaryDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="servicePrincipal != null" >
+        #{servicePrincipal,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="jobProject != null" >
+        #{jobProject,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.Technology" >
+    update it_technology_service
+    <set >
+      <if test="coding != null" >
+        coding = #{coding,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="deadlineStart != null" >
+        deadline_start = #{deadlineStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deadlineEnd != null" >
+        deadline_end = #{deadlineEnd,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="measure != null" >
+        measure = #{measure,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceUser != null" >
+        service_user = #{serviceUser,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceObject != null" >
+        service_object = #{serviceObject,jdbcType=VARCHAR},
+      </if>
+      <if test="principalTeam != null" >
+        principal_team = #{principalTeam,jdbcType=VARCHAR},
+      </if>
+      <if test="jobSummaryAccessory != null" >
+        job_summary_accessory = #{jobSummaryAccessory,jdbcType=VARCHAR},
+      </if>
+      <if test="jobSummaryDescribe != null" >
+        job_summary_describe = #{jobSummaryDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null" >
+        uuid = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId != null" >
+        category_id = #{categoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="servicePrincipal != null" >
+        service_principal = #{servicePrincipal,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="jobProject != null" >
+        job_project = #{jobProject,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.Technology" >
+    update it_technology_service
+    set coding = #{coding,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      deadline_start = #{deadlineStart,jdbcType=TIMESTAMP},
+      deadline_end = #{deadlineEnd,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      measure = #{measure,jdbcType=VARCHAR},
+      service_user = #{serviceUser,jdbcType=VARCHAR},
+      service_object = #{serviceObject,jdbcType=VARCHAR},
+      principal_team = #{principalTeam,jdbcType=VARCHAR},
+      job_summary_accessory = #{jobSummaryAccessory,jdbcType=VARCHAR},
+      job_summary_describe = #{jobSummaryDescribe,jdbcType=VARCHAR},
+      uuid = #{uuid,jdbcType=VARCHAR},
+      category_id = #{categoryId,jdbcType=VARCHAR},
+      service_principal = #{servicePrincipal,jdbcType=LONGVARCHAR},
+      job_project = #{jobProject,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+<!-- 分页 __begin-->
+  <sql id="limit_sql">
+  	   <if test="page_sql != null and page_sql != ''">
+      	${page_sql}
+      </if>
+  </sql>
+  <sql id="where_all">
+  	<where>
+  	<if test="findContent != null and findContent !='' " >
+        and (
+        LOWER(name) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+        LOWER(service_user) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+        )
+      </if>
+      </where>
+  </sql>
+  <!-- 普通的分页查询 -->
+  <select id="findAll" resultMap="BaseResultMap" >
+  	 SELECT 
+    <include refid="Base_Column_List" />
+    FROM it_technology_service 
+    <include refid="where_all"/>
+    <include refid="limit_sql" />
+  </select>
+  <select id="findCount" resultMap="BaseResultMap" >
+ 	 SELECT count(id) FROM  it_technology_service
+  	<include refid="where_all" />
+  </select>  
+<!-- 分页 __end-->  
+</mapper>

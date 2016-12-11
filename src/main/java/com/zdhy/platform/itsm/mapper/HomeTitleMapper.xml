@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.HomeTitleMapper">
+	<resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.HomeTitle">
+		<id column="title_id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="model_path" property="modelPath" jdbcType="VARCHAR" />
+		<result column="priority" property="priority" jdbcType="INTEGER" />
+		<result column="des" property="des" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap type="com.zdhy.platform.itsm.entity.HomeTitle" id="CascadeResultMap" extends="BaseResultMap">
+		<collection property="homeContents" column="hps_id"  ofType="HomeContent">
+			<id column="content_id" property="id" jdbcType="VARCHAR" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+			<result column="hps_id" property="hpsId" jdbcType="VARCHAR" />
+			<result column="url" property="url" jdbcType="VARCHAR" />
+			<result column="priority" property="priority" jdbcType="INTEGER" />
+			<result column="des" property="des" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>	
+	
+	<sql id="Base_Column_List">
+		id, name, model_path, priority, des
+	</sql>
+	<sql id="title_Column_List">
+		ht.id title_id, ht.name, ht.model_path, ht.priority, ht.des
+	</sql>
+	<sql id="content_Column_List">
+		hc.id content_id, hc.name,hc.hps_id, hc.url, hc.priority, hc.des
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from it_home_page_set_title
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByPrimaryKeyCascade" resultMap="CascadeResultMap" parameterType="java.lang.String">
+		select 
+			<include refid="title_Column_List" />,
+			<include refid="content_Column_List" />			
+		FROM it_home_page_set_title ht
+		LEFT JOIN it_home_page_set_content hc ON hc.hps_id = ht.id
+		where ht.id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from it_home_page_set_title
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from it_home_page_set_title
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.zdhy.platform.itsm.entity.HomeTitle">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(uuid(),'-','') from dual
+		</selectKey>
+		insert into it_home_page_set_title (id, name, model_path,
+		priority, des)
+		values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{modelPath,jdbcType=VARCHAR},
+		#{priority,jdbcType=INTEGER}, #{des,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.HomeTitle">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(uuid(),'-','') from dual
+		</selectKey>
+		insert into it_home_page_set_title
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="modelPath != null">
+				model_path,
+			</if>
+			<if test="priority != null">
+				priority,
+			</if>
+			<if test="des != null">
+				des,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="modelPath != null">
+				#{modelPath,jdbcType=VARCHAR},
+			</if>
+			<if test="priority != null">
+				#{priority,jdbcType=INTEGER},
+			</if>
+			<if test="des != null">
+				#{des,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.HomeTitle">
+		update it_home_page_set_title
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="modelPath != null">
+				model_path = #{modelPath,jdbcType=VARCHAR},
+			</if>
+			<if test="priority != null">
+				priority = #{priority,jdbcType=INTEGER},
+			</if>
+			<if test="des != null">
+				des = #{des,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.HomeTitle">
+		update it_home_page_set_title
+		set name = #{name,jdbcType=VARCHAR},
+		model_path = #{modelPath,jdbcType=VARCHAR},
+		priority = #{priority,jdbcType=INTEGER},
+		des = #{des,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<!-- 根据标题id查询内容 -->
+	<select id="selectContentListByTitleId" resultType="com.zdhy.platform.itsm.entity.HomeContent" parameterType="java.lang.String">
+		select id,hps_id,name,url,priority,des
+		from it_home_page_set_content
+		where hps_id=#{hpsId,jdbcType=VARCHAR}
+	</select>
+	<!-- 根据标题id查找前十条内容 -->
+	<select id="selectTopTenContentListByTitleId" resultType="com.zdhy.platform.itsm.entity.HomeContent" parameterType="java.lang.String">
+		select id,hps_id,name,url,priority,des
+		from it_home_page_set_content
+		where hps_id=#{hpsId,jdbcType=VARCHAR} limit 10
+	</select>
+
+
+</mapper>

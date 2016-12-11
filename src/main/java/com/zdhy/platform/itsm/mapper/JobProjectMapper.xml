@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.JobProjectMapper" >
+  <resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.JobProject" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="illustrate" property="illustrate" jdbcType="VARCHAR" />
+    <result column="job_style" property="jobStyle" jdbcType="INTEGER" />
+    <result column="main_duty" property="mainDuty" jdbcType="VARCHAR" />
+    <result column="assist_duty" property="assistDuty" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="technology_id" property="technologyId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    	id, 
+    	name, 
+    	illustrate, 
+    	job_style, 
+    	main_duty, 
+    	assist_duty, 
+    	description, 
+    	technology_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_job_project
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from it_job_project
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_job_project
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.JobProject" >
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+		SELECT replace(uuid(),'-','') FROM dual
+	</selectKey>
+    insert into it_job_project (id, name, illustrate, 
+      job_style, main_duty, assist_duty, 
+      description, technology_id)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{illustrate,jdbcType=VARCHAR}, 
+      #{jobStyle,jdbcType=INTEGER}, #{mainDuty,jdbcType=VARCHAR}, #{assistDuty,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{technologyId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.JobProject" >
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">
+		SELECT replace(uuid(),'-','') FROM dual
+	</selectKey>
+      insert into it_job_project
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="illustrate != null" >
+        illustrate,
+      </if>
+      <if test="jobStyle != null" >
+        job_style,
+      </if>
+      <if test="mainDuty != null" >
+        main_duty,
+      </if>
+      <if test="assistDuty != null" >
+        assist_duty,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="technologyId != null" >
+        technology_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="illustrate != null" >
+        #{illustrate,jdbcType=VARCHAR},
+      </if>
+      <if test="jobStyle != null" >
+        #{jobStyle,jdbcType=INTEGER},
+      </if>
+      <if test="mainDuty != null" >
+        #{mainDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="assistDuty != null" >
+        #{assistDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="technologyId != null" >
+        #{technologyId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.JobProject" >
+    update it_job_project
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="illustrate != null" >
+        illustrate = #{illustrate,jdbcType=VARCHAR},
+      </if>
+      <if test="jobStyle != null" >
+        job_style = #{jobStyle,jdbcType=INTEGER},
+      </if>
+      <if test="mainDuty != null" >
+        main_duty = #{mainDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="assistDuty != null" >
+        assist_duty = #{assistDuty,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="technologyId != null" >
+        technology_id = #{technologyId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.JobProject" >
+    update it_job_project
+    set name = #{name,jdbcType=VARCHAR},
+      illustrate = #{illustrate,jdbcType=VARCHAR},
+      job_style = #{jobStyle,jdbcType=INTEGER},
+      main_duty = #{mainDuty,jdbcType=VARCHAR},
+      assist_duty = #{assistDuty,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      technology_id = #{technologyId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+<!-- 分页 __begin-->
+  <sql id="limit_sql">
+  	   <if test="page_sql != null and page_sql != ''">
+      	${page_sql}
+      </if>
+  </sql>
+  <sql id="where_all">
+  	<where>
+  	<if test="findContent != null and findContent !='' " >
+        and (
+        LOWER(name) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+        LOWER(main_duty) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+        )
+      </if>
+      </where>
+  </sql>
+  <!-- 普通的分页查询 -->
+  <select id="findAll" resultMap="BaseResultMap" >
+  	 select 
+    <include refid="Base_Column_List" />
+    from it_job_project 
+    <include refid="where_all"/>
+    <include refid="limit_sql" />
+  </select>
+  <select id="findCount" resultMap="BaseResultMap" >
+ 	 select count(id) from  it_job_project
+  	<include refid="where_all" />
+  </select>  
+<!-- 分页 __end-->  
+  
+</mapper>

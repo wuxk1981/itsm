@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.DicMapper">
+	<resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.Dic">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="dicTypeId" property="dicTypeId" jdbcType="VARCHAR" />
+		<result column="dicKey" property="dicKey" jdbcType="VARCHAR" />
+		<result column="dicName" property="dicName" jdbcType="VARCHAR" />
+		<result column="dicName" property="dicName" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="dicTypeName" property="dicTypeName" jdbcType="VARCHAR" />
+		<result column="dicTypeKey" property="dicTypeKey" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		it_dic.id,
+		it_dic.dicTypeId,
+		it_dic.dicKey,
+		it_dic.dicName,
+		it_dic.description
+	</sql>
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			<if test="findContent != null and findContent !='' ">
+				AND (
+				LOWER(name) LIKE
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") OR
+				LOWER(url) LIKE
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM u_permission
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="BaseResultMap">
+		SELECT count(id) FROM u_permission
+		<include refid="where_all" />
+	</select>
+
+	<select id="isExist" resultType="Dic" parameterType="Dic">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM it_dic
+		WHERE dicKey = #{dicKey}
+	</select>
+	<select id="query" resultType="Dic" parameterType="java.util.HashMap">
+		SELECT
+		<include refid="Base_Column_List" />,it_dic_type.dicTypeName,it_dic_type.dicTypeKey
+		FROM it_dic 
+		LEFT JOIN it_dic_type ON it_dic.dicTypeId = it_dic_type.id 
+		<where>
+			<if test="t.dicKey != null and t.dicKey != ''">
+				AND it_dic.dicKey like '%${t.dicKey}%'
+			</if>
+			<if test="t.dicName != null and t.dicName != ''">
+				AND it_dic.dicName like '%${t.dicName}%'
+			</if>
+			<if test="t.dicTypeKey != null and t.dicTypeKey != ''">
+				AND it_dic_type.dicTypeKey = #{t.dicTypeKey}
+			</if>
+		</where>
+	</select>
+	<select id="queryAll" resultType="Dic" parameterType="Dic">
+		select
+		<include refid="Base_Column_List" />
+		,it_dic_type.dicTypeName,it_dic_type.dicTypeKey
+		from it_dic,it_dic_type
+		where it_dic.dicTypeId=it_dic_type.id
+		<if test="dicName != null and dicName != ''">
+			and it_dic.dicName like '%${dicName}%'
+		</if>
+		<if test="dicTypeKey != null and dicTypeKey != ''">
+			and it_dic_type.dicTypeKey = #{dicKey}
+		</if>
+	</select>
+	<update id="logicalDelete" parameterType="String">
+		update it_dic set
+		deletestatus = 1
+		where id = #{id}
+	</update>
+
+	<!-- ==================================== 初始化数据（调用存储过程） ========================================= -->
+	<insert id="initData">
+		{call init_shiro_demo()}
+	</insert>
+
+	<!-- ==================================== 初始化数据（调用存储过程） ========================================= -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- 以下为自动生成代码 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from it_dic
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from it_dic
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from it_dic
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.zdhy.platform.itsm.entity.Dic">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT replace(uuid(),'-','') FROM dual
+		</selectKey>
+		insert into it_dic (id, dicTypeId, dicKey,
+		dicName, description)
+		values (#{id,jdbcType=VARCHAR}, #{dicTypeId,jdbcType=VARCHAR},
+		#{dicKey,jdbcType=VARCHAR},
+		#{dicName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.Dic">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT replace(uuid(),'-','') FROM dual
+		</selectKey>
+		insert into it_dic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="dicTypeId != null">
+				dicTypeId,
+			</if>
+			<if test="dicKey != null">
+				dicKey,
+			</if>
+			<if test="dicName != null">
+				dicName,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="dicTypeId != null">
+				#{dicTypeId,jdbcType=VARCHAR},
+			</if>
+			<if test="dicKey != null">
+				#{dicKey,jdbcType=VARCHAR},
+			</if>
+			<if test="dicName != null">
+				#{dicName,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.Dic">
+		update it_dic
+		<set>
+			<if test="dicTypeId != null">
+				dicTypeId = #{dicTypeId,jdbcType=VARCHAR},
+			</if>
+			<if test="dicKey != null">
+				dicKey = #{dicKey,jdbcType=VARCHAR},
+			</if>
+			<if test="dicName != null">
+				dicName = #{dicName,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.Dic">
+		update it_dic
+		set dicTypeId = #{dicTypeId,jdbcType=VARCHAR},
+		dicKey = #{dicKey,jdbcType=VARCHAR},
+		dicName = #{dicName,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

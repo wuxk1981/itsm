@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.DispatchingPlanMapper" >
+  <resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.DispatchingPlan" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="expect_times" property="expectTimes" jdbcType="INTEGER" />
+    <result column="polling_period" property="pollingPeriod" jdbcType="INTEGER" />
+    <result column="period_day" property="periodDay" jdbcType="INTEGER" />
+    <result column="period_weekday" property="periodWeekday" jdbcType="INTEGER" />
+    <result column="period_month" property="periodMonth" jdbcType="INTEGER" />
+    <result column="moment" property="moment" jdbcType="INTEGER" />
+    <result column="moment_value" property="momentValue" jdbcType="VARCHAR" />
+    <result column="begining_time" property="beginingTime" jdbcType="VARCHAR" />
+    <result column="in_between" property="inBetween" jdbcType="INTEGER" />
+    <result column="is_befor" property="isBefor" jdbcType="INTEGER" />
+    <result column="time" property="time" jdbcType="INTEGER" />
+    <result column="timer_mode" property="timerMode" jdbcType="INTEGER" />
+    <result column="remind_way" property="remindWay" jdbcType="INTEGER" />
+    <result column="plan_id" property="planId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, begin_date, end_date, expect_times, polling_period, period_day, period_weekday, 
+    period_month, moment, moment_value, begining_time, in_between, is_befor, time, timer_mode, 
+    remind_way, plan_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_dispatching_plan
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_dispatching_plan
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_dispatching_plan
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 根据巡检计划id删除调度计划 -->
+  <delete id="deleteByPollingPlanId">
+  delete from it_dispatching_plan
+  where plan_id = #{planId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.DispatchingPlan" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_dispatching_plan (id, begin_date, end_date, 
+      expect_times, polling_period, period_day, 
+      period_weekday, period_month, moment, 
+      moment_value, begining_time, in_between, 
+      is_befor, time, timer_mode, 
+      remind_way, plan_id)
+    values (#{id,jdbcType=VARCHAR}, #{beginDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{expectTimes,jdbcType=INTEGER}, #{pollingPeriod,jdbcType=INTEGER}, #{periodDay,jdbcType=INTEGER}, 
+      #{periodWeekday,jdbcType=INTEGER}, #{periodMonth,jdbcType=INTEGER}, #{moment,jdbcType=INTEGER}, 
+      #{momentValue,jdbcType=VARCHAR}, #{beginingTime,jdbcType=VARCHAR}, #{inBetween,jdbcType=INTEGER}, 
+      #{isBefor,jdbcType=INTEGER}, #{time,jdbcType=INTEGER}, #{timerMode,jdbcType=INTEGER}, 
+      #{remindWay,jdbcType=INTEGER}, #{planId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.DispatchingPlan" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_dispatching_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="expectTimes != null" >
+        expect_times,
+      </if>
+      <if test="pollingPeriod != null" >
+        polling_period,
+      </if>
+      <if test="periodDay != null" >
+        period_day,
+      </if>
+      <if test="periodWeekday != null" >
+        period_weekday,
+      </if>
+      <if test="periodMonth != null" >
+        period_month,
+      </if>
+      <if test="moment != null" >
+        moment,
+      </if>
+      <if test="momentValue != null" >
+        moment_value,
+      </if>
+      <if test="beginingTime != null" >
+        begining_time,
+      </if>
+      <if test="inBetween != null" >
+        in_between,
+      </if>
+      <if test="isBefor != null" >
+        is_befor,
+      </if>
+      <if test="time != null" >
+        time,
+      </if>
+      <if test="timerMode != null" >
+        timer_mode,
+      </if>
+      <if test="remindWay != null" >
+        remind_way,
+      </if>
+      <if test="planId != null" >
+        plan_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectTimes != null" >
+        #{expectTimes,jdbcType=INTEGER},
+      </if>
+      <if test="pollingPeriod != null" >
+        #{pollingPeriod,jdbcType=INTEGER},
+      </if>
+      <if test="periodDay != null" >
+        #{periodDay,jdbcType=INTEGER},
+      </if>
+      <if test="periodWeekday != null" >
+        #{periodWeekday,jdbcType=INTEGER},
+      </if>
+      <if test="periodMonth != null" >
+        #{periodMonth,jdbcType=INTEGER},
+      </if>
+      <if test="moment != null" >
+        #{moment,jdbcType=INTEGER},
+      </if>
+      <if test="momentValue != null" >
+        #{momentValue,jdbcType=VARCHAR},
+      </if>
+      <if test="beginingTime != null" >
+        #{beginingTime,jdbcType=VARCHAR},
+      </if>
+      <if test="inBetween != null" >
+        #{inBetween,jdbcType=INTEGER},
+      </if>
+      <if test="isBefor != null" >
+        #{isBefor,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=INTEGER},
+      </if>
+      <if test="timerMode != null" >
+        #{timerMode,jdbcType=INTEGER},
+      </if>
+      <if test="remindWay != null" >
+        #{remindWay,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null" >
+        #{planId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.DispatchingPlan" >
+    update it_dispatching_plan
+    <set >
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectTimes != null" >
+        expect_times = #{expectTimes,jdbcType=INTEGER},
+      </if>
+      <if test="pollingPeriod != null" >
+        polling_period = #{pollingPeriod,jdbcType=INTEGER},
+      </if>
+      <if test="periodDay != null" >
+        period_day = #{periodDay,jdbcType=INTEGER},
+      </if>
+      <if test="periodWeekday != null" >
+        period_weekday = #{periodWeekday,jdbcType=INTEGER},
+      </if>
+      <if test="periodMonth != null" >
+        period_month = #{periodMonth,jdbcType=INTEGER},
+      </if>
+      <if test="moment != null" >
+        moment = #{moment,jdbcType=INTEGER},
+      </if>
+      <if test="momentValue != null" >
+        moment_value = #{momentValue,jdbcType=VARCHAR},
+      </if>
+      <if test="beginingTime != null" >
+        begining_time = #{beginingTime,jdbcType=VARCHAR},
+      </if>
+      <if test="inBetween != null" >
+        in_between = #{inBetween,jdbcType=INTEGER},
+      </if>
+      <if test="isBefor != null" >
+        is_befor = #{isBefor,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=INTEGER},
+      </if>
+      <if test="timerMode != null" >
+        timer_mode = #{timerMode,jdbcType=INTEGER},
+      </if>
+      <if test="remindWay != null" >
+        remind_way = #{remindWay,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null" >
+        plan_id = #{planId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.DispatchingPlan" >
+    update it_dispatching_plan
+    set begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      expect_times = #{expectTimes,jdbcType=INTEGER},
+      polling_period = #{pollingPeriod,jdbcType=INTEGER},
+      period_day = #{periodDay,jdbcType=INTEGER},
+      period_weekday = #{periodWeekday,jdbcType=INTEGER},
+      period_month = #{periodMonth,jdbcType=INTEGER},
+      moment = #{moment,jdbcType=INTEGER},
+      moment_value = #{momentValue,jdbcType=VARCHAR},
+      begining_time = #{beginingTime,jdbcType=VARCHAR},
+      in_between = #{inBetween,jdbcType=INTEGER},
+      is_befor = #{isBefor,jdbcType=INTEGER},
+      time = #{time,jdbcType=INTEGER},
+      timer_mode = #{timerMode,jdbcType=INTEGER},
+      remind_way = #{remindWay,jdbcType=INTEGER},
+      plan_id = #{planId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updatePollingPlan">
+  update it_polling_plan set polling_time = #{0} 
+  where id = #{1}
+  </update>
+</mapper>

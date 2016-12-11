@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.BusinessMapper">
+	<resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.Business">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="coding" property="coding" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="region" property="region" jdbcType="VARCHAR" />
+		<result column="service_user" property="serviceUser" jdbcType="VARCHAR" />
+		<result column="uuid" property="uuid" jdbcType="VARCHAR" />
+		<result column="category_id" property="categoryId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.zdhy.platform.itsm.entity.Business"
+		extends="BaseResultMap">
+		<result column="remark" property="remark" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, coding, name, region, service_user, uuid, category_id
+	</sql>
+	<sql id="Blob_Column_List">
+		remark
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from it_business_service
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="selectAll" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from it_business_service
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from it_business_service
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.zdhy.platform.itsm.entity.Business">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT replace(uuid(),'-','') FROM dual
+		</selectKey>
+		insert into it_business_service (id, coding, name,
+		region, service_user, uuid,
+		category_id, remark)
+		values (#{id,jdbcType=VARCHAR}, #{coding,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR},
+		#{region,jdbcType=VARCHAR}, #{serviceUser,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR},
+		#{categoryId,jdbcType=VARCHAR}, #{remark,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.Business">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT replace(uuid(),'-','') FROM dual
+		</selectKey>
+		insert into it_business_service
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="coding != null">
+				coding,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="region != null">
+				region,
+			</if>
+			<if test="serviceUser != null">
+				service_user,
+			</if>
+			<if test="uuid != null">
+				uuid,
+			</if>
+			<if test="categoryId != null">
+				category_id,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="coding != null">
+				#{coding,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="region != null">
+				#{region,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceUser != null">
+				#{serviceUser,jdbcType=VARCHAR},
+			</if>
+			<if test="uuid != null">
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="categoryId != null">
+				#{categoryId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.Business">
+		update it_business_service
+		<set>
+			<if test="coding != null">
+				coding = #{coding,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="region != null">
+				region = #{region,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceUser != null">
+				service_user = #{serviceUser,jdbcType=VARCHAR},
+			</if>
+			<if test="uuid != null">
+				uuid = #{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="categoryId != null">
+				category_id = #{categoryId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zdhy.platform.itsm.entity.Business">
+		update it_business_service
+		set coding = #{coding,jdbcType=VARCHAR},
+		name = #{name,jdbcType=VARCHAR},
+		region = #{region,jdbcType=VARCHAR},
+		service_user = #{serviceUser,jdbcType=VARCHAR},
+		uuid = #{uuid,jdbcType=VARCHAR},
+		category_id = #{categoryId,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.Business">
+		update it_business_service
+		set coding = #{coding,jdbcType=VARCHAR},
+		name = #{name,jdbcType=VARCHAR},
+		region = #{region,jdbcType=VARCHAR},
+		service_user = #{serviceUser,jdbcType=VARCHAR},
+		uuid = #{uuid,jdbcType=VARCHAR},
+		category_id = #{categoryId,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

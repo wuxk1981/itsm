@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.ChangeMapper" >
+  <resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.Change" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="old_staff" property="oldStaff" jdbcType="VARCHAR" />
+    <result column="old_shift" property="oldShift" jdbcType="VARCHAR" />
+    <result column="old_duty_date" property="oldDutyDate" jdbcType="TIMESTAMP" />
+    <result column="change_reason" property="changeReason" jdbcType="VARCHAR" />
+    <result column="change_staff" property="changeStaff" jdbcType="VARCHAR" />
+    <result column="change_shift" property="changeShift" jdbcType="VARCHAR" />
+    <result column="change_date" property="changeDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, old_staff oldStaff, old_shift oldShift, old_duty_date oldDutyDate, 
+    change_reason changeReason, change_staff changeStaff, change_shift changeShift, 
+    change_date changeDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_change
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from it_change
+  </select>
+  
+  <!-- 查询所有的 -->
+  <select id="query" resultType="Change" parameterType="java.util.HashMap">
+  SELECT
+		<include refid="Base_Column_List" />
+		FROM it_change 
+		<where>
+			<if test="staff != null and staff != ''">
+				AND (old_staff like '%${staff}%'
+			</if>
+			<if test="staff != null and staff != ''">
+				OR change_staff like '%${staff}%')
+			</if>
+			<if test="changeShift != null and changeShift != ''">
+				AND (change_shift like '%${changeShift}%'
+			</if>
+			<if test="changeShift != null and changeShift != ''">
+				OR old_shift like '%${changeShift}%')
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND (change_date &gt;= #{beginDate} OR old_duty_date &gt;= #{beginDate}) 
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND (change_date &lt;= #{endDate} OR old_duty_date &lt;= #{endDate})
+			</if>
+		</where>
+  </select>
+  
+  <!-- 查询自己的 -->
+  <select id="queryMyChange" resultType="Change" parameterType="java.util.HashMap">
+  SELECT
+		<include refid="Base_Column_List" />
+		FROM it_change 
+		<where>
+			old_staff = #{staff,jdbcType=VARCHAR}
+			<if test="changeShift != null and changeShift != ''">
+				AND (change_shift like '%${changeShift}%'
+			</if>
+			<if test="changeShift != null and changeShift != ''">
+				OR old_shift like '%${changeShift}%')
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND (change_date &gt;= #{beginDate} OR old_duty_date &gt;= #{beginDate}) 
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND (change_date &lt;= #{endDate} OR old_duty_date &lt;= #{endDate})
+			</if>
+		</where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_change
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.Change" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_change (id, old_staff, old_shift, 
+      old_duty_date, change_reason, change_staff, 
+      change_shift, change_date)
+    values (#{id,jdbcType=VARCHAR}, #{oldStaff,jdbcType=VARCHAR}, #{oldShift,jdbcType=VARCHAR}, 
+      #{oldDutyDate,jdbcType=TIMESTAMP}, #{changeReason,jdbcType=VARCHAR}, #{changeStaff,jdbcType=VARCHAR}, 
+      #{changeShift,jdbcType=VARCHAR}, #{changeDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.Change" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_change
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="oldStaff != null" >
+        old_staff,
+      </if>
+      <if test="oldShift != null" >
+        old_shift,
+      </if>
+      <if test="oldDutyDate != null" >
+        old_duty_date,
+      </if>
+      <if test="changeReason != null" >
+        change_reason,
+      </if>
+      <if test="changeStaff != null" >
+        change_staff,
+      </if>
+      <if test="changeShift != null" >
+        change_shift,
+      </if>
+      <if test="changeDate != null" >
+        change_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="oldStaff != null" >
+        #{oldStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="oldShift != null" >
+        #{oldShift,jdbcType=VARCHAR},
+      </if>
+      <if test="oldDutyDate != null" >
+        #{oldDutyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="changeReason != null" >
+        #{changeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="changeStaff != null" >
+        #{changeStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="changeShift != null" >
+        #{changeShift,jdbcType=VARCHAR},
+      </if>
+      <if test="changeDate != null" >
+        #{changeDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.Change" >
+    update it_change
+    <set >
+      <if test="oldStaff != null" >
+        old_staff = #{oldStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="oldShift != null" >
+        old_shift = #{oldShift,jdbcType=VARCHAR},
+      </if>
+      <if test="oldDutyDate != null" >
+        old_duty_date = #{oldDutyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="changeReason != null" >
+        change_reason = #{changeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="changeStaff != null" >
+        change_staff = #{changeStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="changeShift != null" >
+        change_shift = #{changeShift,jdbcType=VARCHAR},
+      </if>
+      <if test="changeDate != null" >
+        change_date = #{changeDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.Change" >
+    update it_change
+    set old_staff = #{oldStaff,jdbcType=VARCHAR},
+      old_shift = #{oldShift,jdbcType=VARCHAR},
+      old_duty_date = #{oldDutyDate,jdbcType=TIMESTAMP},
+      change_reason = #{changeReason,jdbcType=VARCHAR},
+      change_staff = #{changeStaff,jdbcType=VARCHAR},
+      change_shift = #{changeShift,jdbcType=VARCHAR},
+      change_date = #{changeDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

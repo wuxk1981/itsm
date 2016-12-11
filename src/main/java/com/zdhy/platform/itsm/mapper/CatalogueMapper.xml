@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.CatalogueMapper" >
+  <resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.Catalogue" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="version_explain" property="versionExplain" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="release_date" property="releaseDate" jdbcType="TIMESTAMP" />
+    <result column="release_user" property="releaseUser" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="last_modify_time" property="lastModifyTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.zdhy.platform.itsm.entity.Catalogue" extends="BaseResultMap" >
+    <result column="service_catalogue_bak" property="serviceCatalogueBak" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, version, number, name, version_explain, create_date, release_date, release_user, 
+    state, last_modify_time, create_user, uuid
+  </sql>
+  <sql id="Blob_Column_List" >
+    service_catalogue_bak
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from it_service_catalogue
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from it_service_catalogue
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="ResultMapWithBLOBs" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from it_service_catalogue
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_service_catalogue
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.Catalogue" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+     
+    insert into it_service_catalogue (id, version, number, 
+      name, version_explain, create_date, 
+      release_date, release_user, state, 
+      last_modify_time, create_user, uuid, 
+      service_catalogue_bak)
+    values (#{id,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{versionExplain,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{releaseDate,jdbcType=TIMESTAMP}, #{releaseUser,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, 
+      #{lastModifyTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
+      #{serviceCatalogueBak,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.Catalogue" >
+	<selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+      
+      insert into it_service_catalogue
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="versionExplain != null" >
+        version_explain,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="releaseDate != null" >
+        release_date,
+      </if>
+      <if test="releaseUser != null" >
+        release_user,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="lastModifyTime != null" >
+        last_modify_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="uuid != null" >
+        uuid,
+      </if>
+      <if test="serviceCatalogueBak != null" >
+        service_catalogue_bak,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="versionExplain != null" >
+        #{versionExplain,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releaseDate != null" >
+        #{releaseDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releaseUser != null" >
+        #{releaseUser,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="lastModifyTime != null" >
+        #{lastModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceCatalogueBak != null" >
+        #{serviceCatalogueBak,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.Catalogue" >
+    update it_service_catalogue
+    <set >
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="versionExplain != null" >
+        version_explain = #{versionExplain,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releaseDate != null" >
+        release_date = #{releaseDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releaseUser != null" >
+        release_user = #{releaseUser,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="lastModifyTime != null" >
+        last_modify_time = #{lastModifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null" >
+        uuid = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceCatalogueBak != null" >
+        service_catalogue_bak = #{serviceCatalogueBak,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zdhy.platform.itsm.entity.Catalogue" >
+    update it_service_catalogue
+    set version = #{version,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      version_explain = #{versionExplain,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      release_date = #{releaseDate,jdbcType=TIMESTAMP},
+      release_user = #{releaseUser,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER},
+      last_modify_time = #{lastModifyTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      uuid = #{uuid,jdbcType=VARCHAR},
+      service_catalogue_bak = #{serviceCatalogueBak,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.Catalogue" >
+    update it_service_catalogue
+    set version = #{version,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      version_explain = #{versionExplain,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      release_date = #{releaseDate,jdbcType=TIMESTAMP},
+      release_user = #{releaseUser,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER},
+      last_modify_time = #{lastModifyTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      uuid = #{uuid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  	    <select id="queryByPage" parameterType="java.util.Map" resultType="Catalogue">
+        select  
+       	    <include refid="Base_Column_List" />
+		    ,
+		    <include refid="Blob_Column_List" /> 
+        from it_service_catalogue limit #{firstResult},#{maxResults}
+    </select>
+    
+    <select id="queryPageTotal" resultType="int">
+        select count(*) from it_service_catalogue
+    </select>
+    
+<!-- 分页 __begin-->
+  <sql id="limit_sql">
+  	   <if test="page_sql != null and page_sql != ''">
+      	${page_sql}
+      </if>
+  </sql>
+  <sql id="where_all">
+  	<where>
+  	<if test="findContent != null and findContent !='' " >
+        and (
+        LOWER(name) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+        LOWER(version) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+        )
+      </if>
+      </where>
+  </sql>
+  <!-- 普通的分页查询 -->
+  <select id="findAll" resultMap="BaseResultMap" >
+  	 SELECT 
+    <include refid="Base_Column_List" />
+    FROM it_service_catalogue 
+    <include refid="where_all"/>
+    <include refid="limit_sql" />
+  </select>
+  <select id="findCount" resultMap="BaseResultMap" >
+ 	 SELECT count(id) 
+ 	 FROM  it_service_catalogue
+  	<include refid="where_all" />
+  </select>  
+<!-- 分页 __end-->    
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.PollingTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.PollingTemplate" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <resultMap id="ObjResultMap" type="com.zdhy.platform.itsm.entity.PollingTemplate" extends="BaseResultMap">
+    <collection property="pollingObjects" column="template_id"  ofType="PollingObject">
+		<id column="object_id" property="id" jdbcType="VARCHAR" />
+		<result column="template_id" property="templateId" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+	</collection>
+  </resultMap>
+  <resultMap id="ProResultMap" type="com.zdhy.platform.itsm.entity.PollingTemplate" extends="BaseResultMap">
+    <collection property="pollingProjects" column="template_id"  ofType="PollingProject">
+		<id column="project_id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="priority" property="priority" jdbcType="INTEGER" />
+		<result column="template_id" property="templateId" jdbcType="VARCHAR" />
+	</collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, type,description
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_polling_template
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_polling_template
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from it_polling_template
+  </select>
+  
+  <!-- 根据模板id查询该模板下的巡检项目及子项 -->
+  <select id="selectProjectAndSubitem" parameterType="java.lang.String" resultType="java.util.Map">
+  SELECT pp.id id ,pp.name name,pp.description description,GROUP_CONCAT(ps.name separator ',') subitemName,pp.priority
+	FROM it_polling_project pp
+	JOIN it_polling_subitem ps ON ps.project_id = pp.id
+	JOIN it_polling_template pt ON pt.id = pp.template_id
+	where pt.id = #{templateId,jdbcType=VARCHAR} 
+	GROUP BY id
+  </select>
+  <!-- 根据模板id查询该模板下的巡检项目 -->
+  <select id="selectProjectListByTemplateId" parameterType="java.lang.String" resultMap="ProResultMap">
+    select 
+    pt.id ,pt.name,pt.type,pt.description,
+    po.id project_id,po.priority,po.template_id,po.name
+    from it_polling_template pt 
+    left join it_polling_project po on po.template_id = pt.id
+    where pt.id = #{id,jdbcType=VARCHAR}
+  </select>
+  <!-- 根据模板id查询该模板下的巡检对象 -->
+  <select id="selectObjectListByTemplateId" parameterType="java.lang.String" resultMap="ObjResultMap">
+    select 
+    pt.id,pt.name,pt.type,pt.description,
+    po.id object_id,po.template_id,po.name
+    from it_polling_template pt 
+    left join it_polling_object po on po.template_id = pt.id
+    where pt.id = #{id,jdbcType=VARCHAR}
+  </select>
+  <!-- 根据模板id查询该模板是否被巡检计划使用 -->
+  <select id="selectPlanNamesByTemplateId" resultType="java.lang.String">
+  SELECT pp.name from it_polling_plan pp
+	LEFT JOIN it_polling_object_plan pop ON pp.id = pop.plan_id
+	LEFT JOIN it_polling_object po ON po.id = pop.object_id 
+	LEFT JOIN it_polling_template pt ON pt.id = po.template_id  
+    WHERE pt.id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 根据模板id数组查询该模板是否被巡检计划使用 -->
+  <select id="selectPlanNamesByTemplateIds" resultType="java.lang.String">
+  SELECT pp.name from it_polling_plan pp
+	LEFT JOIN it_polling_object_plan pop ON pp.id = pop.plan_id
+	LEFT JOIN it_polling_object po ON po.id = pop.object_id 
+	LEFT JOIN it_polling_template pt ON pt.id = po.template_id  
+       WHERE pt.id IN 
+       <foreach collection="array" item="templateId" index="index" open="(" separator="," close=")">
+        #{templateId} 
+    	</foreach>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_polling_template 
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByIds" parameterType="java.lang.String" >
+    delete from it_polling_template 
+    WHERE id IN 
+       <foreach collection="array" item="templateId" index="index" open="(" separator="," close=")">
+        	#{templateId} 
+       </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.PollingTemplate" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_polling_template (id, name, type, 
+      description)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.PollingTemplate" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_polling_template
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zdhy.platform.itsm.entity.PollingTemplate" >
+    update it_polling_template
+    <set >
+      <if test="name != null and name != ''" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null and type != ''" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="description != null and description != ''" >
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zdhy.platform.itsm.entity.PollingTemplate" >
+    update it_polling_template
+    set name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      description = #{description,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+ <!--   根据模板id查询该模板下的巡检项目 
+  <select id="selectProjectListByTemplateId" parameterType="java.lang.String" resultType="com.zdhy.platform.itsm.entity.PollingProject">
+  	select id, name, priority, template_id templateId, description
+  	from it_polling_project
+  	where template_id = #{templateId,jdbcType=VARCHAR}
+  </select>
+  
+  根据模板id查询该模板下的巡检对象
+  <select id="selectObjectListByTemplateId" parameterType="java.lang.String" resultType="com.zdhy.platform.itsm.entity.PollingObject">
+  	select id, template_id templateId,name
+  	from it_polling_object
+  	where template_id = #{templateId,jdbcType=VARCHAR}
+  </select> -->
+</mapper>

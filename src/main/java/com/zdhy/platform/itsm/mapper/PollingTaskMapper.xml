@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.PollingTaskMapper">
+	<resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.PollingTask">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="polling_time" property="pollingTime" jdbcType="TIMESTAMP" />
+		<result column="polling_man" property="pollingMan" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="report_submit_time" property="reportSubmitTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,number,name,polling_time pollingTime,polling_man pollingMan,status,report_submit_time reportSubmitTime
+	</sql>
+	
+	<select id="query" resultType="com.zdhy.platform.itsm.entity.PollingTask" parameterType="java.util.HashMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM it_polling_task 
+		<where>
+			 <if test="name != null and name != ''">
+				AND name like '%${name}%'
+			</if>
+			<if test="pollingMan != null and pollingMan != ''">
+				AND polling_man like '%${pollingMan}%'
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND polling_time &lt;= #{endDate}
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND polling_time &gt;= #{beginDate}    
+			</if>
+		</where>
+	</select>
+	<!-- 根据巡检人查询巡检任务 -->
+	<select id="selectByPollingMan" parameterType="java.lang.String" resultType="java.util.Map">
+	SELECT
+	polling_time pollingTime,name 
+	FROM it_polling_task 
+	WHERE polling_man = #{pollingMan,jdbcType=VARCHAR}
+	</select>
+</mapper>

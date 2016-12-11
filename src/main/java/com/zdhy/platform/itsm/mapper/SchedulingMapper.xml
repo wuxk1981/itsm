@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zdhy.platform.itsm.dao.SchedulingMapper" >
+  <resultMap id="BaseResultMap" type="com.zdhy.platform.itsm.entity.Scheduling" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="shift_id" property="shiftId" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="INTEGER" />
+    <result column="duty_man_id" property="dutyManId" jdbcType="INTEGER" />
+    <result column="duty_man" property="dutyMan" jdbcType="VARCHAR" />
+    <result column="duty_date" property="dutyDate" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, shift_id, position, duty_man_id,duty_man, duty_date,type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_scheduling
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 查询值班信息 -->
+  <select id="selectSchedulings" resultType="java.util.Map">
+  SELECT shift.begin_time time,GROUP_CONCAT(sch.duty_man separator ',') man,sch.duty_date date
+  FROM it_scheduling sch
+  JOIN it_shift shift ON sch.shift_id = shift.id
+  GROUP BY time
+  </select>
+  <!-- 查询值班信息 -->
+  <select id="select" resultType="java.util.Map">
+  SELECT shift.begin_time time,GROUP_CONCAT(sch.duty_man separator ',') man,sch.duty_date date
+  FROM it_scheduling sch
+  JOIN it_shift shift ON sch.shift_id = shift.id
+  <where>
+  		<if test="dutyMan != null and dutyMan != ''">
+			AND duty_man = #{dutyMan} 
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND duty_date &lt;= #{endDate} 
+		</if>
+		<if test="beginDate != null and beginDate != ''">
+			AND duty_date &gt;= #{beginDate} 
+		</if>
+		<if test="date != null and date != ''">
+			AND duty_date = #{date} 
+		</if>
+	</where>
+  GROUP BY date,time
+  </select>
+  
+  <!-- 查询个人值班信息 -->
+  <select id="selectSchedulingByDutyMan" resultType="java.util.Map">
+  SELECT shift.begin_time time,sch.duty_man man,sch.duty_date date FROM it_scheduling sch
+	JOIN it_shift shift ON sch.shift_id = shift.id
+	WHERE sch.duty_man = #{dutyMan,jdbcType=VARCHAR}
+	GROUP BY time
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from it_scheduling
+  </select>
+ 
+ <!-- 根据岗位查询值班情况 -->
+  <select id="selectByPosition" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from it_scheduling 
+    where position = #{position,jdbcType=INTEGER}
+  </select>
+ <!-- 根据班次查询值班情况 -->
+  <select id="selectByShiftId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from it_scheduling 
+    where shift_id = #{id,jdbcType=VARCHAR} 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from it_scheduling
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zdhy.platform.itsm.entity.Scheduling" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_scheduling (id, shift_id, position,duty_man_id,duty_man,duty_date,type
+      )
+    values (#{id,jdbcType=VARCHAR}, #{shiftId,jdbcType=VARCHAR}, #{position,jdbcType=INTEGER},
+    #{dutyManId,jdbcType=INTEGER},#{dutyMan,jdbcType=VARCHAR},#{dutyDate, jdbcType=TIMESTAMP}
+    #{type,jdbcType=INTEGER},  )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zdhy.platform.itsm.entity.Scheduling" >
+    <selectKey keyProperty="id" resultType="String" order="BEFORE">  
+        select  replace(uuid(),'-','')   from dual  
+    </selectKey>
+    insert into it_scheduling
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="shiftId != null" >
+        shift_id,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="dutyManId != null" >
+        duty_man_id,
+      </if>
+      <if test="dutyMan != null" >
+        duty_man,
+      </if>
+      <if test="dutyDate != null" >
+        duty_date,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="shiftId != null" >
+        #{shiftId,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=INTEGER},
+      </if>
+      <if test="dutyManId != null" >
+        #{dutyManId,jdbcType=INTEGER},
+      </if>
+      <if test="dutyMan != null" >
+        #{dutyMan,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyDate != null" >
+        #{dutyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>
